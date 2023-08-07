@@ -7,42 +7,38 @@ const routes: Route[] = [
     {
         path: '/',
         component: React.lazy(() => import('./Home')),
-        layout: GlobalLayout
+        layout: GlobalLayout,
+        isPrivate: true
     },
     {
-        path: '/store',
-        component: React.lazy(() => import('./Store')),
-        layout: GlobalLayout
+        path: '/user-manager',
+        component: React.lazy(() => import('./UserManager')),
+        layout: GlobalLayout,
+        isPrivate: true
     },
     {
-        path: '/store/product/:id',
-        component: React.lazy(() => import('./Store/DetailProduct')),
-        layout: GlobalLayout
+        path: '/user-manager/all',
+        component: React.lazy(() => import('./UserManager/components/AllUser')),
+        layout: GlobalLayout,
+        isPrivate: true
     },
     {
-        path: '/booking',
-        component: React.lazy(() => import('./Booking')),
-        layout: GlobalLayout
+        path: '/forum-manager',
+        component: React.lazy(() => import('./UserManager')),
+        layout: GlobalLayout,
+        isPrivate: true
     },
     {
-        path: '/booking/detail/:id',
-        component: React.lazy(() => import('./Booking/DetailBooking')),
-        layout: GlobalLayout
+        path: '/medical-manager',
+        component: React.lazy(() => import('./Medical')),
+        layout: GlobalLayout,
+        isPrivate: true
     },
     {
-        path: '/forum',
-        component: React.lazy(() => import('./Forum')),
-        layout: null
-    },
-    {
-        path: '/profile/:id',
-        component: React.lazy(() => import('./Profile')),
-        layout: GlobalLayout
-    },
-    {
-        path: '/health/:id',
-        component: React.lazy(() => import('./Health')),
-        layout: GlobalLayout
+        path: '/bill-manager',
+        component: React.lazy(() => import('./Bill')),
+        layout: GlobalLayout,
+        isPrivate: true
     }
 ]
 

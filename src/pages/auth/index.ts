@@ -7,12 +7,14 @@ const routes: Route[] = [
     {
         path: '/register',
         component: React.lazy(() => import('./Register')),
-        layout: AuthLayout
+        layout: AuthLayout,
+        isPrivate: false
     },
     {
         path: '/login',
         component: React.lazy(() => import('./Login')),
-        layout: AuthLayout
+        layout: AuthLayout,
+        isPrivate: false
     }
 ]
 

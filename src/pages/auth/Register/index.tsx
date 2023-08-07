@@ -4,20 +4,26 @@ import View from 'components/shared/View'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { toast } from 'react-toastify'
+import { PayloadRegisterUser, authRegister } from 'redux/reducers'
+import { useAppDispatch } from 'hooks/useRedux'
 
 const Register = () => {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
-    const [userName, setUserName] = useState('')
+    const [username, setUsername] = useState('')
     const [confirmPassword, setConfirmPassword] = useState('')
     const [checkRuleRead, setCheckRuleRead] = useState<boolean>(false)
     const [checkRuleCheck, setCheckRuleCheck] = useState<boolean>(false)
     const [isShowRule, setIsShowRule] = useState<boolean>(false)
 
-    const handleCheckRule = (e: any) => {
+    const dispatch = useAppDispatch()
+
+    const regexEmail = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/
+
+    const handleCheckRule = () => {
         if (checkRuleRead === false) {
             toast.error('Chưa đọc mà đòi check. Bỏ xíu thời gian đọc điều khoản đi bạn ơi!', {
-                position: 'top-center',
+                position: 'top-right',
                 autoClose: 2000,
                 hideProgressBar: false,
                 closeOnClick: true,
@@ -26,6 +32,83 @@ const Register = () => {
             return
         }
         setCheckRuleCheck(!checkRuleCheck)
+    }
+
+    const handleRegister = async (e: any) => {
+        e.preventDefault()
+        if (checkRuleCheck === false) {
+            toast.error('Vui lòng xác nhận điều khoản để đăng ký tài khoản!', {
+                position: 'top-right',
+                autoClose: 2000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true
+            })
+            return
+        }
+
+        if (!email || !password || !username || !confirmPassword) {
+            toast.error('Vui lòng điền đầy đủ thông tin!', {
+                position: 'top-right',
+                autoClose: 2000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true
+            })
+            return
+        }
+
+        if (!regexEmail.test(email)) {
+            toast.error('Email không hợp lệ!', {
+                position: 'top-right',
+                autoClose: 2000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true
+            })
+            return
+        }
+
+        if (username.length < 8) {
+            toast.error('Tên người dùng phải có ít nhất 8 kí tự!', {
+                position: 'top-right',
+                autoClose: 2000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true
+            })
+            return
+        }
+
+        if (password.length < 8) {
+            toast.error('Mật khẩu phải có ít nhất 8 kí tự!', {
+                position: 'top-right',
+                autoClose: 2000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true
+            })
+            return
+        }
+
+        if (password !== confirmPassword) {
+            toast.error('Mật khẩu không khớp!', {
+                position: 'top-right',
+                autoClose: 2000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true
+            })
+            return
+        }
+
+        const data: PayloadRegisterUser = {
+            email,
+            password,
+            username
+        }
+
+        dispatch(authRegister(data))
     }
 
     return (
@@ -40,7 +123,7 @@ const Register = () => {
                         Đăng nhập
                     </Link>
                 </p>
-                <form className='flex max-w-[30rem] flex-col gap-4'>
+                <form className='flex max-w-[30rem] flex-col gap-4' onSubmit={handleRegister}>
                     <View className='flex flex-col gap-1'>
                         <label htmlFor='Email' className='text-[0.8rem] font-bold text-gray-500'>
                             Email
@@ -62,8 +145,8 @@ const Register = () => {
                             type='text'
                             placeholder='Họ và tên'
                             id='username'
-                            value={userName}
-                            onChange={(e) => setUserName(e.target.value)}
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
                             className='rounded-lg border border-gray-300 bg-gray-100 px-4 py-2 text-[0.9rem] outline-none placeholder:font-bold focus:bg-white'
                         />
                     </View>
@@ -97,7 +180,7 @@ const Register = () => {
                         className='mt-2 rounded-lg bg-gray-900 py-2 text-white hover:bg-gray-800'
                         whileTap={{ scale: 0.95 }}
                     >
-                        Đăng nhập
+                        Đăng ký
                     </motion.button>
                 </form>
                 <p className='mb-4 mt-8 flex items-center gap-2 text-[0.9rem] font-bold text-gray-600'>

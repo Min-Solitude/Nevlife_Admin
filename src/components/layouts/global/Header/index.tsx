@@ -1,112 +1,102 @@
-import { Link, useNavigate } from 'react-router-dom'
+import IonIcon from '@reacticons/ionicons'
 import { motion } from 'framer-motion'
 
 import View from 'components/shared/View'
-import IonIcon from '@reacticons/ionicons'
-import { useState } from 'react'
-import { listService } from 'data/listService'
+import { useEffect, useState } from 'react'
+import { MessageProps } from 'redux/reducers'
 
 const Header = () => {
-    const [isScroll, setIsScroll] = useState(false)
-    const [isHovered, setIsHovered] = useState(false)
-    const [hideTimeout, setHideTimeout] = useState<ReturnType<typeof setTimeout> | null>(null)
-    const navigate = useNavigate()
+    const [isShowMessage, setIsShowMessage] = useState(false)
+    const [isNoticeMessage, setIsNoticeMessage] = useState(true)
+    const [isMessage, setIsMessage] = useState<MessageProps[]>(JSON.parse(localStorage.getItem('message') || '[]'))
 
-    window.addEventListener('scroll', () => {
-        if (window.scrollY > 0) {
-            setIsScroll(true)
-        } else {
-            setIsScroll(false)
-        }
-    })
+    useEffect(() => {
+        window.addEventListener('notification', (event: any) => {
+            const message: MessageProps[] = JSON.parse(localStorage.getItem('message') || '[]')
+            let check = true
 
-    const handleMouseLeave = () => {
-        // Set a timeout to hide the content after 500ms
-        setHideTimeout(setTimeout(() => setIsHovered(false), 300))
-    }
+            message.forEach((item: MessageProps) => {
+                if (item.seeMess === false) {
+                    check = false
+                }
+            })
 
-    const handleMouseEnter = () => {
-        // Clear the hide timeout when the mouse enters the button
-        if (hideTimeout) {
-            clearTimeout(hideTimeout)
-            setHideTimeout(null)
-        }
-        setIsHovered(true)
+            setIsNoticeMessage(check)
+            setIsMessage(message)
+        })
+    }, [isMessage])
+
+    const handleCheckMessage = () => {
+        const message: MessageProps[] = JSON.parse(localStorage.getItem('message') || '[]')
+
+        message.forEach((item: MessageProps) => {
+            if (item.seeMess === false) {
+                item.seeMess = true
+            }
+        })
+
+        const data = JSON.stringify(message)
+        localStorage.setItem('message', data)
+
+        setIsShowMessage(!isShowMessage)
+        setIsNoticeMessage(true)
+        setIsMessage(message)
     }
 
     return (
         <View
-            className='fixed left-0 top-4 z-50 w-full bg-transparent'
-            initial={{ y: -100 }}
-            animate={{ y: 0 }}
+            className='flex h-[5rem] items-center justify-between   px-8'
+            initial={{ opacity: 0, y: -100 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
         >
-            <View
-                className={
-                    isScroll
-                        ? 'yellow-200 m-auto flex w-[90%] items-center  justify-between rounded-full border border-gray-200 bg-white p-2 pl-6 shadow-base duration-200 md:w-4/5 lg:w-3/5  xl:w-[60%]'
-                        : 'm-auto flex w-[90%] items-center justify-between rounded-full  bg-transparent py-2 duration-200 xl:w-[80%]'
-                }
-            >
-                <Link to='/' className={'text-[1.6rem] font-bold tracking-wider '}>
-                    nev<span className='text-primary'>life</span>
-                </Link>
-                <nav className={'hidden flex-1 justify-center gap-12 text-[0.95rem] font-bold  text-gray-700 md:flex'}>
-                    <Link to={'/'} className='hover:underline'>
-                        Trang chủ
-                    </Link>
-                    <Link to={'/forum'} className='hover:underline'>
-                        Diễn đàn
-                    </Link>
-                    <button className='relative  ' onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
-                        Dịch vụ
-                        {isHovered && (
+            <View className='hidden xl:block'>
+                <h1 className='text-[1.6rem] font-[800] uppercase tracking-widest text-gray-900'>NEVLIFE</h1>
+            </View>
+            <View className='flex w-full items-center justify-between gap-8  xl:w-auto xl:justify-start'>
+                <View className='flex items-center rounded-2xl bg-gray-100 px-4 py-2'>
+                    <input type='text' placeholder='Search' className='bg-transparent outline-none' />
+                    <motion.button className='flex items-center justify-center text-gray-800' whileTap={{ scale: 0.9 }}>
+                        <IonIcon name='search-outline' className='text-[1.2rem]' />
+                    </motion.button>
+                </View>
+                <View className='flex items-center gap-8'>
+                    <motion.button className='flex items-center justify-center text-gray-800' whileTap={{ scale: 0.9 }}>
+                        <IonIcon name='notifications-outline' className='text-[1.2rem]' />
+                    </motion.button>
+                    <motion.button
+                        className='relative flex items-center justify-center text-gray-800'
+                        whileTap={{ scale: 0.9 }}
+                        onClick={() => {
+                            setIsShowMessage(!isShowMessage)
+                            handleCheckMessage()
+                        }}
+                    >
+                        {!isNoticeMessage && (
+                            <span className='absolute left-0 top-0 h-2 w-2 translate-x-[-50%] translate-y-[-25%] rounded-full bg-red-600'></span>
+                        )}
+                        <IonIcon name='mail-outline' className='text-[1.2rem]' />
+                        {isShowMessage && (
                             <View
-                                className='absolute left-0  top-4 mt-12  flex min-w-[30rem]  flex-col items-start gap-4   rounded-lg  bg-white p-6 shadow-base'
-                                initial={{ opacity: 0, y: -20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0 }}
-                                transition={{ duration: 0.2 }}
-                                onMouseEnter={handleMouseEnter}
-                                onMouseLeave={handleMouseLeave}
+                                className='absolute -bottom-4 right-0 z-50 flex h-[30rem]  min-w-[25rem] flex-col  gap-2 overflow-y-scroll rounded-2xl border border-gray-300 bg-gray-100 p-4 shadow-lg'
+                                initial={{ opacity: 0, y: '120%' }}
+                                animate={{ opacity: 1, y: '100%' }}
+                                transition={{ duration: 0.5 }}
                             >
-                                <IonIcon
-                                    name='caret-up'
-                                    className='absolute left-8 top-0 ml-auto translate-x-[-50%] translate-y-[-70%] text-[2rem] text-white'
-                                />
-                                <label className='text-[0.9rem] uppercase text-gray-500'>Cung cấp</label>
-                                <View className='grid grid-cols-2 gap-x-16 gap-y-4'>
-                                    {listService.map((item, index) => (
-                                        <Link
-                                            to={item.link === 'profile' ? `/profile/1` : `/${item.link}`}
-                                            key={index}
-                                            className='flex items-center gap-4 text-gray-500 hover:text-black'
-                                        >
-                                            <IonIcon
-                                                name={item.icon as any}
-                                                className='translate-y-[-0.1rem] text-[1.2rem] duration-300'
-                                            />
-                                            <p className='text-[0.9rem] text-black'>{item.title}</p>
-                                        </Link>
-                                    ))}
-                                </View>
+                                {isMessage.map((item: any, index: any) => (
+                                    <View key={index} className='rounded-lg bg-white px-4 py-4'>
+                                        <p className='text-sm text-gray-800'>
+                                            {item.message} - {new Date(item.time).toLocaleTimeString()}
+                                        </p>
+                                    </View>
+                                ))}
                             </View>
                         )}
-                    </button>
-                    <button className='hidden hover:underline lg:block'>Giới thiệu</button>
-                </nav>
-                <nav className='  flex gap-6 text-[0.9rem]'>
-                    <motion.button
-                        className={
-                            'flex items-center justify-center gap-2 rounded-full bg-gray-900 px-[1.5rem] py-[0.7rem] text-white'
-                        }
-                        whileTap={{ scale: 0.9 }}
-                        onClick={() => navigate('/register')}
-                    >
-                        <span>Đăng ký</span>
-                        <IonIcon name='chevron-forward' className='ml-1 text-[1.2rem]' />
                     </motion.button>
-                </nav>
+                    <motion.button className='flex items-center justify-center text-gray-800' whileTap={{ scale: 0.9 }}>
+                        <IonIcon name='home-outline' className='text-[1.2rem]' />
+                    </motion.button>
+                </View>
             </View>
         </View>
     )

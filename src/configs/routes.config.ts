@@ -8,6 +8,7 @@ export interface Route {
     path: string
     component: FunctionComponent<any>
     layout: FunctionComponent<any> | null
+    isPrivate: boolean
 }
 
 export const routes: Route[] = [
@@ -16,6 +17,7 @@ export const routes: Route[] = [
     {
         path: '*',
         component: NotFound,
-        layout: null
+        layout: null,
+        isPrivate: false
     }
 ]

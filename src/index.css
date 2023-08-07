@@ -1,11 +1,10 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-@import url('https://fonts.googleapis.com/css2?family=Montserrat&family=Open+Sans:wght@300;500;700;800&display=swap');
-
+@import url('https://fonts.googleapis.com/css2?family=Montserrat&family=Open+Sans:wght@300;500;700;800&family=Poppins:wght@300;500;700&display=swap');
 /* SCORLL BAR  */
 ::-webkit-scrollbar {
-    width: 10px;
+    width: 0px;
     height: 0;
 }
 
@@ -18,7 +17,7 @@
 }
 
 body {
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Poppins', sans-serif;
     overflow-x: hidden;
 }
 

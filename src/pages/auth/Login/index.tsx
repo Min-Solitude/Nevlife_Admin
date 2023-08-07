@@ -1,12 +1,48 @@
 import { motion } from 'framer-motion'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import View from 'components/shared/View'
+import { toast } from 'react-toastify'
+import { useAppDispatch, useAppSelector } from 'hooks/useRedux'
+import { authLogin } from 'redux/reducers'
+import history from 'redux/store/history'
 
 const Login = () => {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
+
+    const dispatch = useAppDispatch()
+    const checkAccessToken = useAppSelector((state) => state.auth.accessToken)
+
+    useEffect(() => {
+        if (checkAccessToken) {
+            history.push('/')
+        }
+    }, [checkAccessToken])
+
+    const regexEmail = /^[a-zA-Z0-9]+@(?:[a-zA-Z0-9]+\.)+[A-Za-z]+$/
+
+    const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault()
+
+        if (!email || !password) {
+            toast.error('Vui lòng nhập đầy đủ thông tin')
+            return
+        }
+
+        if (!regexEmail.test(email)) {
+            toast.error('Email không hợp lệ')
+            return
+        }
+
+        const data = {
+            email,
+            password
+        }
+
+        dispatch(authLogin(data))
+    }
 
     return (
         <View className='flex w-full items-center justify-center md:w-[80%]'>
@@ -20,7 +56,7 @@ const Login = () => {
                         Đăng ký
                     </Link>
                 </p>
-                <form className='flex max-w-[30rem] flex-col gap-4'>
+                <form className='flex max-w-[30rem] flex-col gap-4' onSubmit={handleLogin}>
                     <View className='flex flex-col gap-1'>
                         <label htmlFor='Email' className='text-[0.8rem] font-bold text-gray-500'>
                             Email
